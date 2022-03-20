@@ -11,7 +11,7 @@ import (
  */
 
 var (
-	workCount uint32 = 10
+	workCount uint64 = 10
 	workQueueLen uint32 = 2500
 )
 
