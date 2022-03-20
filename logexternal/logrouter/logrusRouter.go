@@ -7,14 +7,8 @@ import (
 )
 
 var (
-	logrusObj *logcomponent.LogrusYouki
+	logrusObj logiface.ILog = new(logcomponent.LogrusYouki)//*logcomponent.LogrusYouki
 )
-
-func LogrusInit(){
-	//logrus组件全局对象初始化
-	logcomponent.InitFileLog()
-	logrusObj = new(logcomponent.LogrusYouki)
-}
 
 /*
  定义logrus日志注册的路由实现方法 ,继承基类
@@ -38,7 +32,7 @@ func (m *LogrusRouter) LogExecute(request logiface.ILogRequest){
 	}else if request.GetLogLevel() == logenum.FatalLevel {
 		logrusObj.Fatal(request.GetLogDataStr())
 	} else if request.GetLogLevel() == logenum.PanicLevel {
-		logrusObj.Panic(request.GetLogDataStr())
+		//logrusObj.Panic(request.GetLogDataStr())
 	}
 }
 

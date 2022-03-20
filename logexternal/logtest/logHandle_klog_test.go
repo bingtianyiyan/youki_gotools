@@ -3,6 +3,7 @@ package logtest
 import (
 	"flag"
 	"github.com/bingtianyiyan/youki_gotools/logexternal"
+	"github.com/bingtianyiyan/youki_gotools/logexternal/logcomponent"
 	"github.com/bingtianyiyan/youki_gotools/logexternal/logenum"
 	"github.com/bingtianyiyan/youki_gotools/logexternal/logrouter"
 	"testing"
@@ -25,7 +26,7 @@ func initTestLocal(){
 	logObj2.InitLogTaskWorkerQueuePool()
 
 	//初始化KLog
-	logrouter.KLogInit()
+	logcomponent.InitKLog()
 }
 
 //测试klog

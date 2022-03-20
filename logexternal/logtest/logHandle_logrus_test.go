@@ -2,6 +2,7 @@ package logtest
 
 import (
 	"github.com/bingtianyiyan/youki_gotools/logexternal"
+	"github.com/bingtianyiyan/youki_gotools/logexternal/logcomponent"
 	"github.com/bingtianyiyan/youki_gotools/logexternal/logenum"
 	"github.com/bingtianyiyan/youki_gotools/logexternal/logrouter"
 	"testing"
@@ -13,7 +14,7 @@ var (
 )
 
 func initlogrus(){
-	logrouter.LogrusInit()
+	logcomponent.InitFileLog()
 	//初始化日志队列
 	logObj = logexternal.NewLogHandle()
 	//注册日志路由（根据需要写

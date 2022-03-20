@@ -1,0 +1,3 @@
+redis:
+  address: 'localhost:6379'
+  maxidle: 20

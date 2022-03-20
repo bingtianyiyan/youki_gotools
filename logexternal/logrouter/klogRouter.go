@@ -1,14 +1,14 @@
 package logrouter
 
 import (
+	"github.com/bingtianyiyan/youki_gotools/logexternal/logcomponent"
 	"github.com/bingtianyiyan/youki_gotools/logexternal/logenum"
 	"github.com/bingtianyiyan/youki_gotools/logexternal/logiface"
-	"k8s.io/klog"
 )
 
-func KLogInit(){
-	klog.InitFlags(nil)
-}
+var (
+	klogObj logiface.ILog = new(logcomponent.KLogYouki)
+)
 
 /*
  定义klog日志注册的路由实现方法 ,继承基类
@@ -20,13 +20,13 @@ type KLogRouter struct {
 
 func (m *KLogRouter) LogExecute(request logiface.ILogRequest){
 	 if request.GetLogLevel() == logenum.InfoLevel {
-		klog.Info(request.GetLogDataStr())
+		 klogObj.Info(request.GetLogDataStr())
 	}else if request.GetLogLevel() == logenum.WarnLevel {
-		klog.Warning(request.GetLogDataStr())
+		 klogObj.Warn(request.GetLogDataStr())
 	}else if request.GetLogLevel() == logenum.ErrorLevel {
-		klog.Error(request.GetLogDataStr())
+		 klogObj.Error(request.GetLogDataStr())
 	}else if request.GetLogLevel() == logenum.FatalLevel {
-		klog.Fatal(request.GetLogDataStr())
+		 klogObj.Fatal(request.GetLogDataStr())
 	}
-	klog.Flush()
+	logcomponent.KLogFlush()
 }
