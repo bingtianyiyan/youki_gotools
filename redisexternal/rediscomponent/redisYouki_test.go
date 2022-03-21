@@ -6,6 +6,19 @@ import (
 	"testing"
 )
 
+type Book struct {
+	BookName  string
+	Author    string
+	PageCount string
+	Press     string
+}
+var top1 = Book{
+	BookName:  "Crazy golang",
+	Author:    "Moon",
+	PageCount: "600",
+	Press:     "GoodBook",
+}
+
 var (
 	redisGoCli = new(RedisGoYouKi)
 )
@@ -123,5 +136,54 @@ func TestRedisGoYouKi_Incr(t *testing.T) {
 
 func TestRedisGoYouKi_Append(t *testing.T) {
 	var resp = redisGoCli.Append("key09","yyyyy")
+	fmt.Println(redis.Int64(resp.Data,resp.Err))
+}
+
+/*
+Hash
+ */
+
+func TestRedisGoYouKi_HSet(t *testing.T) {
+	var resp = redisGoCli.HSetNx("HKey01","name","youki",100000)
+	fmt.Println(redis.Int64(resp.Data,resp.Err))
+}
+
+func TestRedisGoYouKi_HMSetMany(t *testing.T) {
+	var resp = redisGoCli.HMSetMany("HKey01",&top1,0)
+	fmt.Println(redis.Int64(resp.Data,resp.Err))
+}
+
+func TestRedisGoYouKi_HSetNx(t *testing.T) {
+	var resp = redisGoCli.HSetNx("HKey01","name","youki1",0)
+	fmt.Println(redis.Int64(resp.Data,resp.Err))
+}
+
+func TestRedisGoYouKi_HExists(t *testing.T) {
+	var resp = redisGoCli.HExists("HKey01","name")
+	fmt.Println(redis.Int64(resp.Data,resp.Err))
+}
+
+func TestRedisGoYouKi_HGet(t *testing.T) {
+	var resp = redisGoCli.HGet("HKey01","name")
+	fmt.Println(redis.String(resp.Data,resp.Err))
+}
+
+func TestRedisGoYouKi_HGetAll(t *testing.T) {
+	var resp = redisGoCli.HGetAll("HKey01")
+	fmt.Println(redis.Strings(resp.Data,resp.Err))
+}
+
+func TestRedisGoYouKi_HMGet(t *testing.T) {
+	var resp = redisGoCli.HMGet("HKey01","name","BookName")
+	fmt.Println(redis.Strings(resp.Data,resp.Err))
+}
+
+func TestRedisGoYouKi_HVals(t *testing.T) {
+	var resp = redisGoCli.HVals("HKey01")
+	fmt.Println(redis.Strings(resp.Data,resp.Err))
+}
+
+func TestRedisGoYouKi_HIncrBy(t *testing.T) {
+	var resp = redisGoCli.HIncrBy("HKey01","PageCount",20)
 	fmt.Println(redis.Int64(resp.Data,resp.Err))
 }

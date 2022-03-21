@@ -112,6 +112,18 @@ func convertTypeOk(value interface{}) (int64,bool){
 	}
 }
 
+//返回一般性通用结果
+func getReturnResult(result interface{},err error)(bool,error){
+	//result 返回OK则说明成功，处理Ok返回True
+	if err == nil{
+		op,ok := convertTypeOk(result)
+		if ok && op == 1 {
+			return ok,err
+		}
+	}
+	return false,err
+}
+
 func setSingleKeyExpire(cli redis.Conn,key string,expireTimeSecond int)(interface{},error){
 	result,err := cli.Do(redisenum.Key_Expire, key, expireTimeSecond)
 	if err != nil {
@@ -302,4 +314,107 @@ func (m RedisGoYouKi) Append(key string,data interface{}) redisenum.RedisRespons
 	response,_ := m.Execute(redisenum.Str_Append,false,key,data)
 	return response
 }
+
+/*
+哈希相关
+ */
+
+// HDel 删除一个或多个哈希表字段
+func (m RedisGoYouKi) HDel(paramsFields ...interface{})redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_Hdel,false,paramsFields)
+	return response
+}
+
+// HExists 查看哈希表 key 中，指定的字段是否存在
+//返回true说明字段存在
+func (m RedisGoYouKi) HExists(key string,field string)redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_Hexists,false,key,field)
+	response.Result,response.Err = getReturnResult(response.Data,response.Err)
+	return response
+}
+
+// HGet 获取存储在哈希表中指定字段的值
+func (m RedisGoYouKi) HGet(key string,field string)redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_Hget,false,key,field)
+	return response
+}
+
+// HGetAll 获取在哈希表中指定 key 的所有字段和值
+func (m RedisGoYouKi) HGetAll(key string)redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_Hgetall,false,key)
+	return response
+}
+
+//HSet 将哈希表 key 中的字段 field 的值设为 value
+func (m RedisGoYouKi) HSet(key string,field string,data interface{}) redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_Hset,false,key,field,data)
+	return response
+}
+
+
+// HIncrBy 将 key 所储存的值加上给定的增量值（increment）,返回的Data是原始值+增长值
+func (m RedisGoYouKi) HIncrBy(key string,field string,num int) redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_Hincrby,false,key,field,num)
+	return response
+}
+
+// HIncrByFloat 将 key 所储存的值加上给定的浮点增量值（increment）
+func (m RedisGoYouKi) HIncrByFloat(key string,field string,num float64) redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_HincrbyFloat,false,key,field,num)
+	return response
+}
+
+// HKeys 获取所有哈希表中的字段
+func (m RedisGoYouKi) HKeys(key string) redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_HKeys,false,key)
+	return response
+}
+
+// HLen 获取哈希表中字段的数量
+func (m RedisGoYouKi) HLen(key string) redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_HLen,false,key)
+	return response
+}
+
+// HMGet 获取所有给定字段的值
+func (m RedisGoYouKi) HMGet(key string,fields ...interface{})redisenum.RedisResponse{
+	var params = redis.Args{}.Add(key).AddFlat(fields)
+	response,_ := m.Execute(redisenum.Hash_Hmget,false,params...)
+	return response
+}
+
+// HMSetMany 同时将多个 field-value (域-值)对设置到哈希表 key 中
+func (m RedisGoYouKi) HMSetMany(key string,data interface{},expireTimeSecond int) redisenum.RedisResponse{
+	var params = redis.Args{}.Add(key).AddFlat(data)
+	response,cli := m.Execute(redisenum.Hash_Hmset,true,params...)
+	if cli != nil {
+		defer cli.Close()
+		if response.Result && expireTimeSecond > 0{
+         response.Data,response.Err = setSingleKeyExpire(cli,key,expireTimeSecond)
+		}
+	}
+	return response
+}
+
+// HSetNx 只有在字段 field 不存在时，设置哈希表字段的值
+func (m RedisGoYouKi) HSetNx(key string,field string,data interface{},expireTimeSecond int) redisenum.RedisResponse{
+	response,cli := m.Execute(redisenum.Hash_Hsetnx,true,key,field,data)
+	if cli != nil {
+		defer cli.Close()
+		if  response.Result {
+			var result,ok = convertTypeOk(response.Data)
+			if ok && result == 1 && expireTimeSecond > 0 {
+				response.Data, response.Err = setSingleKeyExpire(cli,key,expireTimeSecond)
+			}
+		}
+	}
+	return response
+}
+
+// HVals 获取哈希表中所有值
+func (m RedisGoYouKi) HVals(key string)redisenum.RedisResponse{
+	response,_ := m.Execute(redisenum.Hash_Hvals,false,key)
+	return response
+}
+
 
