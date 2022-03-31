@@ -6,7 +6,7 @@ Desc:
 package syncx
 
 import (
-	"github.com/bingtianyiyan/youki_gotools/commonexternal"
+	"github.com/bingtianyiyan/youki_gotools/commonexternal/timex"
 	"sync"
 	"time"
 )
@@ -67,7 +67,7 @@ func (m *ImmutableResource) Get() (interface{}, error) {
 }
 
 func (m *ImmutableResource) maybeRefresh(execute func()) {
-	now := commonexternal.Now()
+	now := timex.Now()
 	lastTime := m.lastTime.Load()
 	if lastTime == 0 || lastTime+m.refreshInterval < now {
 		m.lastTime.Set(now)
@@ -76,7 +76,7 @@ func (m *ImmutableResource) maybeRefresh(execute func()) {
 }
 
 // WithRefreshIntervalOnFailure sets refresh interval on failure.
-// Set interval to 0 to enforce refresh every time if not succeeded, default is time.Second.
+// Set interval to 0 to enforce refresh every timex if not succeeded, default is time.Second.
 func WithRefreshIntervalOnFailure(interval time.Duration) ImmutableResourceOption {
 	return func(resource *ImmutableResource) {
 		resource.refreshInterval = interval

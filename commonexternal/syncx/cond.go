@@ -6,7 +6,7 @@ Desc:
 package syncx
 
 import (
-	"github.com/bingtianyiyan/youki_gotools/commonexternal"
+	"github.com/bingtianyiyan/youki_gotools/commonexternal/timex"
 	"time"
 )
 
@@ -21,16 +21,16 @@ func NewCond() *Cond{
 	}
 }
 
-// WaitWithTimeout wait for signal return remain wait time or timed out.
+// WaitWithTimeout wait for signal return remain wait timex or timed out.
 func (m *Cond) WaitWithTimeout(timeout time.Duration) (time.Duration, bool) {
    timer := time.NewTimer(timeout)
    defer timer.Stop()
 
-   begin := commonexternal.Now()
+   begin := timex.Now()
 
 	select {
         case <- m.signal:
-        	elapsed := commonexternal.Since(begin)
+        	elapsed := timex.Since(begin)
         	remainTimeout := timeout - elapsed
         	return  remainTimeout,true
 	case <- timer.C:
