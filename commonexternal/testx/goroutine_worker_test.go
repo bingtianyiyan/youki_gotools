@@ -28,17 +28,18 @@ type Runner struct {
 
 }
 
-func NewRunner(d time.Duration) *Runner{
+func NewRunner(d time.Duration) *Runner {
 	return &Runner{
-		complete: make(chan error),
-		timeout: time.After(d),
-		interrupt: make(chan os.Signal,1),
+		complete:  make(chan error),
+		timeout:   time.After(d),
+		interrupt: make(chan os.Signal, 1),
 	}
 }
 
-func (self *Runner) Add(task ...func(int)){
-	self.tasks = append(self.tasks,task...)
+func (self *Runner) Add(task ...func(int)) {
+	self.tasks = append(self.tasks, task...)
 }
+
 //检查是否接收到了中断信号
 func (self *Runner) isInterrupt() bool {
 	select {
@@ -50,28 +51,28 @@ func (self *Runner) isInterrupt() bool {
 	}
 }
 
-func (self *Runner) run() error{
-     for k,v := range self.tasks{
-     	if self.isInterrupt(){
-     		return nil
+func (self *Runner) run() error {
+	for k, v := range self.tasks {
+		if self.isInterrupt() {
+			return nil
 		}
 		v(k)
-	 }
-	 return nil
+	}
+	return nil
 }
 
-func (self *Runner) Start() error{
-	signal.Notify(self.interrupt,os.Interrupt)
+func (self *Runner) Start() error {
+	signal.Notify(self.interrupt, os.Interrupt)
 
 	go func() {
 		self.complete <- self.run()
 	}()
 
 	select {
-	    case err := <- self.complete:
-	    	fmt.Println("comple..")
-	    	return err
-	case <- self.timeout:
+	case err := <-self.complete:
+		fmt.Println("comple..")
+		return err
+	case <-self.timeout:
 		return ErrTimeOut
 
 	}
@@ -85,14 +86,14 @@ func TestWorker(t *testing.T) {
 
 	r.Add(createTask(), createTask(), createTask())
 
-	if err:=r.Start();err!=nil{
+	if err := r.Start(); err != nil {
 		switch err {
 		case ErrTimeOut:
 			log.Println(err)
-			os.Exit(1)
+			//os.Exit(1)
 		case ErrInterrupt:
 			log.Println(err)
-			os.Exit(2)
+			//os.Exit(2)
 		}
 	}
 	log.Println("...任务执行结束...")
@@ -101,6 +102,6 @@ func TestWorker(t *testing.T) {
 func createTask() func(int) {
 	return func(id int) {
 		log.Printf("正在执行任务%d", id)
-		time.Sleep(time.Duration(id)* time.Second)
+		time.Sleep(time.Duration(id) * time.Second)
 	}
 }
