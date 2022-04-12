@@ -78,6 +78,7 @@ func DecodePacket(r io.Reader) ([]byte, error) {
 		return nil, errors.New("bad rpc magic")
 	}
 
+
 	payload := make([]byte, totalsize-8)
 	_, err = io.ReadFull(rr, payload)
 	if err != nil {
