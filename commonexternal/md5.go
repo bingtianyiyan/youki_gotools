@@ -1,0 +1,37 @@
+package commonexternal
+
+import (
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
+	"io"
+)
+
+//@author: [piexlmax](https://github.com/piexlmax)
+//@function: MD5V
+//@description: md5加密
+//@param: str []byte
+//@return: string
+
+func MD5V(str []byte, b ...byte) string {
+	h := md5.New()
+	h.Write(str)
+	return hex.EncodeToString(h.Sum(b))
+}
+
+/** 加密方式 **/
+
+func Md5ByString(str string) string {
+	m := md5.New()
+	_, err := io.WriteString(m, str)
+	if err != nil {
+		panic(err)
+	}
+	arr := m.Sum(nil)
+	return fmt.Sprintf("%x", arr)
+}
+
+func Md5ByBytes(b []byte) string {
+	return fmt.Sprintf("%x", md5.Sum(b))
+}
+
