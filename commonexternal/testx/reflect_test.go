@@ -16,7 +16,7 @@ func TestReflectDemo(t *testing.T) {
 	var xV = reflect.ValueOf(x)
 	fmt.Println(reflect.TypeOf(x))    //float64
 	fmt.Println(xV.Kind())            //float64
-	fmt.Println(xV.Interface().(int)) //还原成原值
+	fmt.Println(xV.Interface().(float64)) //还原成原值
 
 	p := reflect.ValueOf(&x)
 	fmt.Println(p.Kind())                        //ptr
